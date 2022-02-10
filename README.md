@@ -1,5 +1,5 @@
-# Hackulator-Keypad-Driver
-Hackulator Keypad Driver
+# PI30-w keypad driver
+PI30-w keypad driver
 
 An adaptation of the hackulator keypad driver to make it work with my ti30 eco
 and some preferences changes.
