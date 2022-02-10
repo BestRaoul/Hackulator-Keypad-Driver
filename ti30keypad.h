@@ -1,10 +1,10 @@
 /***************************************************
- Filename: ti83keypad.h
- 
+ Filename: ti30keypad.h
+
  ***************************************************/
 
-#ifndef ti83keypad_h
-#define ti83keypad_h
+#ifndef ti30keypad_h
+#define ti30keypad_h
 
 #include <stdio.h>
 #include <unistd.h>
@@ -38,7 +38,7 @@
 #define MODE_ALPHA_LOWER 2  // lowercase.png
 #define MODE_ALPHA_UPPER 3  // uppercase.png
 #define MODE_SECOND 4       // 2nd.png
-#define MODE_TI83 5         // ti83mode.png
+#define MODE_TI30 5         // ti30mode.png
 
 // None of the defined KeySymbols are in the 0x8000 range
 #define SPECIAL_ALPHA_UPPER_KEY       0x8000
@@ -145,7 +145,7 @@ KeySym secondLayout[8][7] = {
     {XK_F10, NoSymbol, NoSymbol, XK_i, XK_underscore, XK_KP_Enter, SPECIAL_BRIGHT_DOWN_KEY}       // Row H: Graph, Null, 0, ., (-), Enter, Down
 };
 
-KeySym ti83Layout[8][7] = {
+KeySym ti30Layout[8][7] = {
     {XK_F11, XK_F6, XK_F7, XK_F8, XK_F9, XK_Escape, NoSymbol},  // Row A: Mode, Math, Apps, Prgm, Vars, Clear
     {XK_Delete, XK_apostrophe, XK_x, XK_F10, NoSymbol, NoSymbol, NoSymbol},      // Row B: Del, Alpha, "X,T,𝚹,n" (GraphVar), Stat
     {XK_Tab, XK_backslash, XK_s, XK_c, XK_t, XK_asciicircum, NoSymbol},      // Row C: 2nd, X^-1, Sin, Cos, Tan, ^
@@ -189,4 +189,4 @@ KeySym getKeySymbol(int row, int col);
 gboolean loop(gpointer data);
 int main(int argc, char *argv[]);
 
-#endif /* ti83keypad_h */
+#endif /* ti30keypad_h */

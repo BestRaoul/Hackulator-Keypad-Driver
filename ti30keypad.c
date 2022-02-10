@@ -1,5 +1,5 @@
 /***************************************************
-  Filename: ti83keypad.c
+  Filename: ti30keypad.c
 
 ***************************************************/
 
@@ -10,7 +10,7 @@
 // Remove Debugging Messages (Search for g_print)
 // Polish up any other small details
 
-#include "ti83keypad.h"
+#include "ti30keypad.h"
 
 int getColCount(void)
 {
@@ -52,7 +52,7 @@ gboolean specialKey(KeySym keySym, int eventType)
             changeControlLock();
         }
     }
-    
+
     if (keySym == SPECIAL_ALPHA_UPPER_KEY ||
         keySym == SPECIAL_ALPHA_LOWER_KEY ||
         keySym == SPECIAL_2ND_KEY ||
@@ -63,7 +63,7 @@ gboolean specialKey(KeySym keySym, int eventType)
         keySym == SPECIAL_CONTROL_LOCK) {
         return TRUE;
     }
-    
+
     return FALSE;
 }
 
@@ -102,13 +102,13 @@ void changeAlphaLock(void)
     if (mode != MODE_SECOND) {
         return;
     }
-    
+
     if (isAlphaLockActive) {
         isAlphaLockActive = FALSE;
     } else {
         isAlphaLockActive = TRUE;
     }
-    
+
     if (lastMode == MODE_ALPHA_UPPER) {
         changeMode(MODE_ALPHA_UPPER);
     } else if (lastMode == MODE_ALPHA_LOWER || lastMode == MODE_NORMAL) {
@@ -131,7 +131,7 @@ gchar * getImagePath(char * imageFile)
     //char currentFolder[256];
     //char pathSave[256];
     const char* imageFolder = "/images/";
-    GString * imagePath = g_string_new("/home/pi/ti83keypad");
+    GString * imagePath = g_string_new("/home/pi/ti30keypad");
 /*
     gchar * result = g_strstr_len (executable->str, 1, "/");
     if (result == NULL) {
@@ -160,10 +160,10 @@ gchar * getModeIconImage(void)
         return "lowercase.png";
     } else if (mode == MODE_ALPHA_UPPER) {
         return "uppercase.png";
-    } else if (mode == MODE_TI83) {
-        return "ti83mode.png";
+    } else if (mode == MODE_TI30) {
+        return "ti30mode.png";
     }
-    
+
     return "numbers.png";
 }
 
@@ -176,7 +176,7 @@ void changeMode(int newMode)
 {
     lastMode = mode;
     mode = newMode;
-    if (newMode == MODE_NORMAL || newMode == MODE_TI83) {
+    if (newMode == MODE_NORMAL || newMode == MODE_TI30) {
         isAlphaLockActive = FALSE;
         isControlLockActive = FALSE;
     }
@@ -188,10 +188,10 @@ void changeMode(int newMode)
 
 void cycleModes(void)
 {
-    if (mode == MODE_TI83) {
+    if (mode == MODE_TI30) {
         changeMode(MODE_NORMAL);
     } else {
-        changeMode(MODE_TI83);
+        changeMode(MODE_TI30);
     }
 }
 
@@ -208,7 +208,7 @@ gboolean isShiftRequired(KeySym keySym)
             return TRUE;
         }
     }
-    
+
     return FALSE;
 }
 
@@ -216,7 +216,7 @@ void emulateKeyPress(KeySym keySym)
 {
     KeyCode modcode = 0; //init value
     isKeyPressed = TRUE;
-    
+
     if (specialKey(keySym, EVENT_PRESS)) {
         return;
     } else {
@@ -226,9 +226,9 @@ void emulateKeyPress(KeySym keySym)
     if (keySym == NoSymbol) {
         return;
     }
-    
+
     modcode = XKeysymToKeycode(display, keySym);
-    
+
     if (isShiftRequired(keySym)) {
         //g_print("Event: Shift Pressed\n");
         XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Shift_L), True, 0);
@@ -242,7 +242,7 @@ void emulateKeyPress(KeySym keySym)
     }
 
     //g_print("Event: Key Pressed\n");
-    
+
     XTestFakeKeyEvent(display, modcode, True, 0);
     XFlush(display);
 }
@@ -251,17 +251,17 @@ void emulateKeyRelease(KeySym keySym)
 {
     KeyCode modcode = 0; //init value
     isKeyPressed = FALSE;
-    
+
     if (specialKey(keySym, EVENT_RELEASE)) {
         return;
     }
-    
+
     if (keySym == NoSymbol) {
         return;
     }
 
     modcode = XKeysymToKeycode(display, keySym);
-    
+
     //g_print("Event: Key Released\n");
     XTestFakeKeyEvent(display, modcode, False, 0);
     XFlush(display);
@@ -278,7 +278,7 @@ void emulateKeyRelease(KeySym keySym)
         XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Shift_L), False, 0);
         XFlush(display);
     }
-    
+
 }
 
 void shutdown(void)
@@ -290,8 +290,8 @@ void shutdown(void)
 
 KeySym getKeySymbol(int row, int col)
 {
-    if (mode == MODE_TI83) {
-        return ti83Layout[row][col];
+    if (mode == MODE_TI30) {
+        return ti30Layout[row][col];
     } else if (mode == MODE_ALPHA_UPPER) {
         return alphaUpperLayout[row][col];
     } else if (mode == MODE_ALPHA_LOWER) {
@@ -299,28 +299,28 @@ KeySym getKeySymbol(int row, int col)
     } else if (mode == MODE_SECOND) {
         return secondLayout[row][col];
     }
-    
+
     return normalLayout[row][col];
 }
 
 void setup(void)
 {
     int i;
-    
+
     if (wiringPiSetup() == -1) {
         g_print("wiringPiSetup error\n");
         exit(1);
     }
-    
+
     if ((display = XOpenDisplay(NULL)) == NULL) {
         g_print("XOpenDisplay Initialization Failure\n");
         exit(2);
     }
-    
+
     sr595Setup (100, 8, DATA_PIN, CLOCK_PIN, LATCH_PIN) ;
     softPwmCreate (BACKLIGHT_PIN, MAX_BRIGHTNESS, MAX_BRIGHTNESS);
     colCount = getColCount();
-    
+
     for (i = 0; i < colCount; i++) {   // Set column pins for input, with pullup.
         pinMode(colPins[i], INPUT);
         pullUpDnControl (colPins[i], PUD_DOWN);
@@ -328,11 +328,11 @@ void setup(void)
 }
 
 gboolean loop(gpointer data)
-{   
+{
     int row, col;
     gboolean keyFound = FALSE;
     KeySym ks;
-    
+
     if (isKeyPressed) {
         return FALSE;
     }
@@ -353,7 +353,7 @@ gboolean loop(gpointer data)
                 emulateKeyRelease(ks);
                 keyFound = TRUE;                            // Force exit of both for loops.
             }
-            
+
             if (keyFound) break;
         }
         if (keyFound) {
@@ -361,10 +361,10 @@ gboolean loop(gpointer data)
             break;
         }
     }
-    
+
     if (digitalRead(ONKEY_PIN) == LOW) {
         if (!keyFound) {
-            if (mode == MODE_TI83) {
+            if (mode == MODE_TI30) {
                 // Emulate F12 and Check For Mode Change Combo
                 emulateKeyPress(XK_F12);
                 while (keyFound == FALSE && digitalRead(ONKEY_PIN) == LOW) {
@@ -401,7 +401,7 @@ gboolean loop(gpointer data)
             }
         }
     }
-    
+
     return TRUE;
 }
 
@@ -412,10 +412,10 @@ static void show_about( GtkWidget *widget, gpointer data )
     dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL,
                                              GTK_MESSAGE_INFO,
                                              GTK_BUTTONS_OK,
-                                             "TI-83 Keypad Driver\nBy Melissa LeBlanc-Williams");
-    
+                                             "TI-30 Keypad Driver\nBy Melissa LeBlanc-Williams");
+
     gtk_widget_show_all (dialog);
-    
+
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
 }
@@ -426,23 +426,23 @@ int main(int argc, char *argv[])
 {
     executable = g_string_new("");
     g_string_append(executable, argv[0]);
-    
+
     gtk_init (&argc, &argv);
 
     if (geteuid() != 0) {
         fprintf (stderr, "You need to be root to run this program. (sudo?)\n");
         exit(0);
     }
-    
+
     tray = gtk_status_icon_new_from_file(getImagePath(getModeIconImage()));
     gtk_status_icon_set_tooltip_text(tray, "Normal");
-    
+
     setup();
     gint func_ref = g_timeout_add (SCAN_DELAY, loop, FALSE);
 
     gtk_main();
-    
+
     g_source_remove (func_ref);
-    
+
     return 0;
 }
