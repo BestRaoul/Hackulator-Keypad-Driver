@@ -10,9 +10,11 @@ Main changes:
 
 #Dependencies
 
-libgtk2.0-dev 
-cmake
-xorg
-openbox
-libxt-dev
-libxtst-dev
+```
+sudo apt-get install  libgtk2.0-dev  cmake xorg openbox libxt-dev libxtst-dev
+
+cd /tmp
+wget https://project-downloads.drogon.net/wiringpi-latest.deb
+sudo dpkg -i wiringpi-latest.deb
+rm wiringpi-latest.deb
+```
