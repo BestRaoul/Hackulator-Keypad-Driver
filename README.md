@@ -7,3 +7,12 @@ and some preferences changes.
 Main changes:
   5x8 matrix
   keys layouts have been modified (letters, symbols & numbers, game, ...)
+
+#Dependencies
+
+libgtk2.0-dev 
+cmake
+xorg
+openbox
+libxt-dev
+libxtst-dev
