@@ -444,11 +444,14 @@ int main(int argc, char *argv[])
     //
     // g_source_remove (func_ref);
     wiringPiSetup()
+    pinMode(25, GPIO.OUTPUT)
+    pinMode(26, GPIO.OUTPUT)
+
     fprintf(stderr, "Testing GPIO output\n");
-    digitalWrite(4, HIGH);
+    digitalWrite(25, GPIO.HIGH);
     sleep(5);
     fprintf(stderr, "Testing GPIO output\n");
-    digitalWrite(7, HIGH);
+    digitalWrite(26, GPIO.HIGH);
     sleep(5000);
 
     return 0;
