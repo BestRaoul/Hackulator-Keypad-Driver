@@ -443,15 +443,15 @@ int main(int argc, char *argv[])
     // gtk_main();
     //
     // g_source_remove (func_ref);
-    wiringPiSetup()
-    pinMode(25, GPIO.OUTPUT)
-    pinMode(26, GPIO.OUTPUT)
+    wiringPiSetup();
+    pinMode(25, OUTPUT);
+    pinMode(26, OUTPUT);
 
     fprintf(stderr, "Testing GPIO output\n");
-    digitalWrite(25, GPIO.HIGH);
+    digitalWrite(25, HIGH);
     sleep(5);
     fprintf(stderr, "Testing GPIO output\n");
-    digitalWrite(26, GPIO.HIGH);
+    digitalWrite(26, HIGH);
     sleep(5000);
 
     return 0;
