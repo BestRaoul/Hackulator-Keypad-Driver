@@ -445,6 +445,7 @@ int main(int argc, char *argv[])
     //
     // g_source_remove (func_ref);
     wiringPiSetup();
+    int i;
     for (i = 0; i < 13; i++) {   // Set column pins for input, with pullup.
         pinMode(outs[i], OUTPUT);
     }
