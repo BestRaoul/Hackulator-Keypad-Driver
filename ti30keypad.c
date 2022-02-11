@@ -443,6 +443,7 @@ int main(int argc, char *argv[])
     // gtk_main();
     //
     // g_source_remove (func_ref);
+    wiringPiSetup()
     int gpio = 4;
     fprintf(stderr, "Testing GPIO output\n");
     fprintf(stderr, "HIGH\n");
@@ -453,6 +454,6 @@ int main(int argc, char *argv[])
     fprintf(stderr, "HIGH\n");
     digitalWrite(gpio, HIGH);
     sleep(5000);
-    
+
     return 0;
 }
