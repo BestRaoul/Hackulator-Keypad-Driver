@@ -423,7 +423,7 @@ static void show_about( GtkWidget *widget, gpointer data )
 
 int outs[] = {4,17,27,22,23,24,25,5,6,12,13,16,26}; // Columns I, J, K, L, M, N, O
 
-int main(int argc, char, *argv[])
+int main(int argc, char *argv[])
 {
     // executable = g_string_new("");
     // g_string_append(executable, argv[0]);
