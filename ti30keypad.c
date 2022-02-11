@@ -421,7 +421,7 @@ static void show_about( GtkWidget *widget, gpointer data )
 }
 */
 
-int outs[] = {4,17,27,22,23,24,25,5,6,12,13,16,26}; // Columns I, J, K, L, M, N, O
+int outs[] = {4,17,18,27,22,23,24,25,5,6,12,13,16,26}; // Columns I, J, K, L, M, N, O
 
 int main(int argc, char *argv[])
 {
@@ -446,10 +446,10 @@ int main(int argc, char *argv[])
     // g_source_remove (func_ref);
     wiringPiSetup();
     int i;
-    for (i = 0; i < 13; i++) {   // Set column pins for input, with pullup.
+    for (i = 0; i < 14; i++) {   // Set column pins for input, with pullup.
         pinMode(outs[i], OUTPUT);
     }
-    for (i = 0; i < 13; i++) {   // Set column pins for input, with pullup.
+    for (i = 0; i < 14; i++) {   // Set column pins for input, with pullup.
             fprintf(stderr, "Testing output GPIO %d : HIGH\n", outs[i]);
             digitalWrite(outs[i], HIGH);
     }
