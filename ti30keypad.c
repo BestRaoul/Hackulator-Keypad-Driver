@@ -444,12 +444,12 @@ int main(int argc, char *argv[])
     //
     // g_source_remove (func_ref);
     int gpio = 4;
-    fprintf(stderr, "Testing GPIO %s output\n", gpio);
+    fprintf(stderr, "Testing GPIO output\n");
     fprintf(stderr, "%s : HIGH\n", gpio);
     digitalWrite(gpio, HIGH);
     sleep(5);
     gpio=17;
-    fprintf(stderr, "Testing GPIO %s output\n", gpio);
+    fprintf(stderr, "Testing GPIO output\n");
     fprintf(stderr, "%s : HIGH\n", gpio);
     digitalWrite(gpio, HIGH);
 
