@@ -452,6 +452,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "Testing GPIO output\n");
     fprintf(stderr, "HIGH\n");
     digitalWrite(gpio, HIGH);
-
+    sleep(5000);
+    
     return 0;
 }
