@@ -450,8 +450,8 @@ int main(int argc, char *argv[])
         pinMode(outs[i], OUTPUT);
     }
     for (i = 0; i < 13; i++) {   // Set column pins for input, with pullup.
-            fprintf(stderr, "Testing GPIO output\n");
-            digitalWrite(i, HIGH);
+            fprintf(stderr, "Testing output GPIO %d : HIGH\n", outs[i]);
+            digitalWrite(outs[i], HIGH);
     }
     sleep(5000);
 
