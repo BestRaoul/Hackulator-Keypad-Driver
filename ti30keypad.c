@@ -424,25 +424,34 @@ static void show_about( GtkWidget *widget, gpointer data )
 
 int main(int argc, char *argv[])
 {
-    executable = g_string_new("");
-    g_string_append(executable, argv[0]);
-
-    gtk_init (&argc, &argv);
-
-    if (geteuid() != 0) {
-        fprintf (stderr, "You need to be root to run this program. (sudo?)\n");
-        exit(0);
-    }
-
-    tray = gtk_status_icon_new_from_file(getImagePath(getModeIconImage()));
-    gtk_status_icon_set_tooltip_text(tray, "Normal");
-
-    setup();
-    gint func_ref = g_timeout_add (SCAN_DELAY, loop, FALSE);
-
-    gtk_main();
-
-    g_source_remove (func_ref);
+    // executable = g_string_new("");
+    // g_string_append(executable, argv[0]);
+    //
+    // gtk_init (&argc, &argv);
+    //
+    // if (geteuid() != 0) {
+    //     fprintf (stderr, "You need to be root to run this program. (sudo?)\n");
+    //     exit(0);
+    // }
+    //
+    // tray = gtk_status_icon_new_from_file(getImagePath(getModeIconImage()));
+    // gtk_status_icon_set_tooltip_text(tray, "Normal");
+    //
+    // setup();
+    // gint func_ref = g_timeout_add (SCAN_DELAY, loop, FALSE);
+    //
+    // gtk_main();
+    //
+    // g_source_remove (func_ref);
+    int gpio = 4;
+    fprintf(stderr, "Testing GPIO %s output\n", gpio);
+    fprintf(stderr, "%s : HIGH\n", gpio);
+    digitalWrite(gpio, HIGH);
+    sleep(5);
+    gpio=17;
+    fprintf(stderr, "Testing GPIO %s output\n", gpio);
+    fprintf(stderr, "%s : HIGH\n", gpio);
+    digitalWrite(gpio, HIGH);
 
     return 0;
 }
