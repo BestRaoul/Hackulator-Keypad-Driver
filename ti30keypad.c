@@ -444,15 +444,11 @@ int main(int argc, char *argv[])
     //
     // g_source_remove (func_ref);
     wiringPiSetup()
-    int gpio = 4;
     fprintf(stderr, "Testing GPIO output\n");
-    fprintf(stderr, "HIGH\n");
-    digitalWrite(gpio, HIGH);
+    digitalWrite(4, HIGH);
     sleep(5);
-    gpio=17;
     fprintf(stderr, "Testing GPIO output\n");
-    fprintf(stderr, "HIGH\n");
-    digitalWrite(gpio, HIGH);
+    digitalWrite(7, HIGH);
     sleep(5000);
 
     return 0;
