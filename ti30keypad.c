@@ -445,15 +445,36 @@ int main(int argc, char *argv[])
     //
     // g_source_remove (func_ref);
     wiringPiSetup();
-    int i;
-    for (i = 0; i < 14; i++) {   // Set column pins for input, with pullup.
-        pinMode(outs[i], OUTPUT);
+
+    pinMode(17, OUTPUT);
+    pinMode(23, OUTPUT);
+
+    pinMode(27, INPUT);
+    pinMode(24, INPUT);
+
+    while ("sus"=="sus"){
+      digitalWrite(17, HIGH);
+      digitalWrite(23, HIGH);
+
+      if (digitalRead(27) == HIGH) {
+        fprintf(stderr, "Button RED pressed!");
+      }
+      if (digitalRead(24) == HIGH) {
+        fprintf(stderr, "Button YELLOW pressed!");
+      }
+
+      sleep(0.1);
     }
-    for (i = 0; i < 14; i++) {   // Set column pins for input, with pullup.
-            fprintf(stderr, "Testing output GPIO %d : HIGH\n", outs[i]);
-            digitalWrite(outs[i], HIGH);
-    }
-    sleep(5000);
 
     return 0;
 }
+
+// ####### FORGOTTEN ABYSS
+
+// for (i = 0; i < 14; i++) {   // Set column pins for input, with pullup.
+//     pinMode(outs[i], OUTPUT);
+// }
+// for (i = 0; i < 14; i++) {   // Set column pins for input, with pullup.
+//         fprintf(stderr, "Testing output GPIO %d : HIGH\n", outs[i]);
+//         digitalWrite(outs[i], HIGH);
+// }
