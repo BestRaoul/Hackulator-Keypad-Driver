@@ -452,7 +452,7 @@ int main(int argc, char *argv[])
     pinMode(27, INPUT);
     pinMode(24, INPUT);
 
-    while ("sus"=="sus"){
+    while (1==1){
       digitalWrite(17, HIGH);
       digitalWrite(23, HIGH);
 
@@ -463,7 +463,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Button YELLOW pressed!");
       }
 
-      sleep(0.1);
+      sleep(1);
     }
 
     return 0;
