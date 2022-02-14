@@ -17,6 +17,7 @@ int getColCount(void)
     return sizeof(colPins) / sizeof(colPins[0]);
 }
 
+//fix it not use sr595
 void setValue(int outputValue)
 {
     int bit;
@@ -25,11 +26,13 @@ void setValue(int outputValue)
     }
 }
 
+//fix it not use sr595
 void setBit(int bit)
 {
     setValue(1 << bit);
 }
 
+//fix adapt to my code case
 gboolean specialKey(KeySym keySym, int eventType)
 {
     // If Special Key, respond and return true
@@ -67,6 +70,7 @@ gboolean specialKey(KeySym keySym, int eventType)
     return FALSE;
 }
 
+//??? not used
 void brightnessUp(void)
 {
     if (brightness < MAX_BRIGHTNESS) {
@@ -76,7 +80,7 @@ void brightnessUp(void)
     g_print("Brightness Up [%i/%i]", brightness, MAX_BRIGHTNESS);
     changeMode(MODE_NORMAL);
 }
-
+//??? not used
 void brightnessDown(void)
 {
     if (brightness > 0) {
@@ -88,6 +92,7 @@ void brightnessDown(void)
 }
 
 // This function handles lock status for the non-special keys
+//fix adapt to my case
 void handleLockStatus(KeySym keySym)
 {
     if (mode == MODE_SECOND) {
@@ -97,6 +102,7 @@ void handleLockStatus(KeySym keySym)
     }
 }
 
+//fix to my case
 void changeAlphaLock(void)
 {
     if (mode != MODE_SECOND) {
@@ -124,7 +130,7 @@ void changeControlLock(void)
         isControlLockActive = TRUE;
     }
 }
-
+//idk remove idk
 gchar * getImagePath(char * imageFile)
 {
     // Can't get it working with autostart, so just using Absolute path for now
@@ -151,7 +157,7 @@ gchar * getImagePath(char * imageFile)
 
     return imagePath->str;
 }
-
+//idk
 gchar * getModeIconImage(void)
 {
     if (mode == MODE_SECOND) {
@@ -166,12 +172,12 @@ gchar * getModeIconImage(void)
 
     return "numbers.png";
 }
-
+//idk
 void updateStatusIcon(void)
 {
     gtk_status_icon_set_from_file (tray, getImagePath(getModeIconImage()));
 }
-
+//fix adapt to my case
 void changeMode(int newMode)
 {
     lastMode = mode;
@@ -185,7 +191,7 @@ void changeMode(int newMode)
     }
     updateStatusIcon();
 }
-
+//remove I guess
 void cycleModes(void)
 {
     if (mode == MODE_TI30) {
@@ -199,19 +205,7 @@ void destroy(GtkWidget *widget, gpointer data)
 {
     gtk_main_quit ();
 }
-
-gboolean isShiftRequired(KeySym keySym)
-{
-    // Check if a Shift is Required
-    for (int i = 0; i < SHIFT_SYMBOL_SIZE; i++) {
-        if (keySym == shiftSymbols[i]) {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
-
+//check phys if it even work without sr595
 void emulateKeyPress(KeySym keySym)
 {
     KeyCode modcode = 0; //init value
@@ -246,7 +240,7 @@ void emulateKeyPress(KeySym keySym)
     XTestFakeKeyEvent(display, modcode, True, 0);
     XFlush(display);
 }
-
+// check phys
 void emulateKeyRelease(KeySym keySym)
 {
     KeyCode modcode = 0; //init value
@@ -287,7 +281,7 @@ void shutdown(void)
     // Maybe it has something to do with system not blacking out screen anymore...
     system ("sudo shutdown -h now");
 }
-
+//fix adapt to my case
 KeySym getKeySymbol(int row, int col)
 {
     if (mode == MODE_TI30) {
@@ -303,6 +297,11 @@ KeySym getKeySymbol(int row, int col)
     return normalLayout[row][col];
 }
 
+// does wiringPiSetup
+// + OpenXDisplay
+// + HIGH on backlight = soft pwm on the backlight pin
+// + mode inp on all colPins[i]
+//check if it even works and no errors
 void setup(void)
 {
     int i;
@@ -317,16 +316,37 @@ void setup(void)
         exit(2);
     }
 
-    sr595Setup (100, 8, DATA_PIN, CLOCK_PIN, LATCH_PIN) ;
+// //sr595Setup (100, 8, DATA_PIN, CLOCK_PIN, LATCH_PIN) ;
+//     struct wiringPiNodeStruct *node ;
+//
+//     node = wiringPiNewNode (pinBase, numPins) ;
+//
+//     node->data0           = dataPin ;
+//     node->data1           = clockPin ;
+//     node->data2           = latchPin ;
+//     node->data3           = 0 ;		// Output register
+//     node->digitalWrite    = myDigitalWrite ;
+//
+//   // Initialise the underlying hardware
+//
+//     digitalWrite (dataPin,  LOW) ;
+//     digitalWrite (clockPin, LOW) ;
+//     digitalWrite (latchPin, HIGH) ;
+//
+//     pinMode (dataPin,  OUTPUT) ;
+//     pinMode (clockPin, OUTPUT) ;
+//     pinMode (latchPin, OUTPUT) ;
+
     softPwmCreate (BACKLIGHT_PIN, MAX_BRIGHTNESS, MAX_BRIGHTNESS);
     colCount = getColCount();
 
     for (i = 0; i < colCount; i++) {   // Set column pins for input, with pullup.
         pinMode(colPins[i], INPUT);
-        pullUpDnControl (colPins[i], PUD_DOWN);
+        pullUpDnControl (colPins[i], PUD_DOWN); //???idfk what that does i hope it-s good
     }
 }
 
+//fix adapt to my case
 gboolean loop(gpointer data)
 {
     int row, col;
@@ -423,6 +443,7 @@ static void show_about( GtkWidget *widget, gpointer data )
 
 int outs[] = {4,17,18,27,22,23,24,25,5,6,12,13,16,26}; // Columns I, J, K, L, M, N, O
 
+//main
 int main(int argc, char *argv[])
 {
     // executable = g_string_new("");
@@ -431,8 +452,8 @@ int main(int argc, char *argv[])
     // gtk_init (&argc, &argv);
     //
     // if (geteuid() != 0) {
-    //     fprintf (stderr, "You need to be root to run this program. (sudo?)\n");
-    //     exit(0);
+      //     fprintf (stderr, "You need to be root to run this program. (sudo?)\n");
+      //     exit(0);
     // }
     //
     // tray = gtk_status_icon_new_from_file(getImagePath(getModeIconImage()));
@@ -444,33 +465,27 @@ int main(int argc, char *argv[])
     // gtk_main();
     //
     // g_source_remove (func_ref);
-    wiringPiSetup();
+    setup();
 
-    pinMode(17, OUTPUT);
-    pinMode(23, OUTPUT);
+    pinMode(24, OUTPUT);
+    pinMode(25, OUTPUT);
 
     pinMode(27, INPUT);
-    pinMode(24, INPUT);
+    pinMode(28, INPUT);
 
-    while (1==1){
-      digitalWrite(17, HIGH);
-      digitalWrite(23, HIGH);
+    digitalWrite(24, HIGH);
+    digitalWrite(25, HIGH);
 
-      if (digitalRead(27) == HIGH) {
-        fprintf(stderr, "Button RED pressed!");
-      }
-      if (digitalRead(24) == HIGH) {
-        fprintf(stderr, "Button YELLOW pressed!");
-      }
-
-      sleep(1);
+    while (TRUE){
+      if (digitalRead(27) == HIGH) { fprintf(stderr, "Button RED pressed!");}
+      if (digitalRead(28) == HIGH) { fprintf(stderr, "Button RED pressed!");}
     }
 
     return 0;
 }
-
+//
 // ####### FORGOTTEN ABYSS
-
+//
 // for (i = 0; i < 14; i++) {   // Set column pins for input, with pullup.
 //     pinMode(outs[i], OUTPUT);
 // }
