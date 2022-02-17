@@ -357,12 +357,12 @@ void setup(void)
     colCount = getColCount();
     rowCount = getRowCount();
 
-    for (i = 0; i < 8; i++) {   // Set column pins for input, with pullup.
+    for (i = 0; i < colCount; i++) {   // Set column pins for input, with pullup.
         pinMode(colPins[i], INPUT);
         pullUpDnControl (colPins[i], PUD_DOWN); //???idfk what that does i hope it-s good
     }
 
-    for (i = 0; i < 5; i++) {   // Set column pins for input, with pullup.
+    for (i = 0; i < rowCount; i++) {   // Set column pins for input, with pullup.
         pinMode(rowPins[i], OUTPUT);
         pullUpDnControl (rowPins[i], PUD_UP); //???idfk what that does i hope it-s good
     }
@@ -518,13 +518,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-//
 // ####### FORGOTTEN ABYSS
-//
-// for (i = 0; i < 14; i++) {   // Set column pins for input, with pullup.
-//     pinMode(outs[i], OUTPUT);
-// }
-// for (i = 0; i < 14; i++) {   // Set column pins for input, with pullup.
-//         fprintf(stderr, "Testing output GPIO %d : HIGH\n", outs[i]);
-//         digitalWrite(outs[i], HIGH);
-// }
