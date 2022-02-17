@@ -55,7 +55,8 @@
 GtkStatusIcon *tray;
 Display *display;
 
-int colPins[] = {idfk[8]}; // Columns I, J, K, L, M, N, O, P
+//Read Pins (PA 0-7 on the calculators pcb)
+int colPins[] = {29,28,27,26,25,24,23,22}; // Columns I, J, K, L, M, N, O, P
 
 KeySym letterLayout[5][8] = {
 // Static 10 buttons

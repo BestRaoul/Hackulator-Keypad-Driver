@@ -17,12 +17,17 @@ int getColCount(void)
     return sizeof(colPins) / sizeof(colPins[0]);
 }
 
+int getRowCount(void)
+{
+    return sizeof(rowPins) / sizeof(rowPins[0]);
+}
+
 //fix it not use sr595
 void setValue(int outputValue)
 {
     int bit;
-    for (bit = 0 ; bit < 8; ++bit) {
-        digitalWrite (100 + bit, outputValue & (1 << bit));
+    for (bit = 0 ; bit < rowPins; ++bit) {
+        digitalWrite (rowPins[bit], outputValue & (1 << bit));
     }
 }
 
@@ -284,17 +289,15 @@ void shutdown(void)
 //fix adapt to my case
 KeySym getKeySymbol(int row, int col)
 {
-    if (mode == MODE_TI30) {
-        return ti30Layout[row][col];
-    } else if (mode == MODE_ALPHA_UPPER) {
-        return alphaUpperLayout[row][col];
-    } else if (mode == MODE_ALPHA_LOWER) {
-        return alphaLowerLayout[row][col];
-    } else if (mode == MODE_SECOND) {
-        return secondLayout[row][col];
+    if (mode == MODE_LETTER) {
+        return letterLayout[row][col];
+    } else if (mode == MODE_SYMBOL) {
+        return symbolLayout[row][col];
+    } else if (mode == MODE_GAME) {
+        return gameLayout[row][col];
     }
 
-    return normalLayout[row][col];
+    return letterLayout[row][col];
 }
 
 // does wiringPiSetup
@@ -311,12 +314,13 @@ void setup(void)
         exit(1);
     }
 
-    if ((display = XOpenDisplay(NULL)) == NULL) {
-        g_print("XOpenDisplay Initialization Failure\n");
-        exit(2);
-    }
+    // if ((display = XOpenDisplay(NULL)) == NULL) {
+    //     g_print("XOpenDisplay Initialization Failure\n");
+    //     exit(2);
+    // }
 
-// //sr595Setup (100, 8, DATA_PIN, CLOCK_PIN, LATCH_PIN) ;
+/*
+//sr595Setup (100, 8, DATA_PIN, CLOCK_PIN, LATCH_PIN) ;
 //     struct wiringPiNodeStruct *node ;
 //
 //     node = wiringPiNewNode (pinBase, numPins) ;
@@ -336,13 +340,20 @@ void setup(void)
 //     pinMode (dataPin,  OUTPUT) ;
 //     pinMode (clockPin, OUTPUT) ;
 //     pinMode (latchPin, OUTPUT) ;
+*///sr595Setup
 
-    softPwmCreate (BACKLIGHT_PIN, MAX_BRIGHTNESS, MAX_BRIGHTNESS);
+    //softPwmCreate (BACKLIGHT_PIN, MAX_BRIGHTNESS, MAX_BRIGHTNESS);
     colCount = getColCount();
+    rowCount = getRowCount();
 
     for (i = 0; i < colCount; i++) {   // Set column pins for input, with pullup.
         pinMode(colPins[i], INPUT);
         pullUpDnControl (colPins[i], PUD_DOWN); //???idfk what that does i hope it-s good
+    }
+
+    for (i = 0; i < rowCount; i++) {   // Set column pins for input, with pullup.
+        pinMode(rowPins[i], OUTPUT);
+        //pullUpDnControl (colPins[i], PUD_DOWN); //???idfk what that does i hope it-s good
     }
 }
 
@@ -441,7 +452,8 @@ static void show_about( GtkWidget *widget, gpointer data )
 }
 */
 
-int outs[] = {4,17,18,27,22,23,24,25,5,6,12,13,16,26}; // Columns I, J, K, L, M, N, O
+//power pins (PC 0-4 on the pcb ???)
+int rowPins[] = {0,2,3,4,5}; // Columns I, J, K, L, M, N, O
 
 //main
 int main(int argc, char *argv[])
@@ -467,18 +479,33 @@ int main(int argc, char *argv[])
     // g_source_remove (func_ref);
     setup();
 
-    pinMode(24, OUTPUT);
-    pinMode(25, OUTPUT);
-
-    pinMode(27, INPUT);
-    pinMode(28, INPUT);
-
-    digitalWrite(24, HIGH);
-    digitalWrite(25, HIGH);
-
     while (TRUE){
-      if (digitalRead(27) == HIGH) { fprintf(stderr, "Button RED pressed!");}
-      if (digitalRead(28) == HIGH) { fprintf(stderr, "Button RED pressed!");}
+      int row, col;
+      colCount = getColCount();
+      rowCount = getRowCount();
+      gboolean keyFound = FALSE;
+      KeySym ks;
+
+      for (row = 0; row < rowCount; row++) {
+          setBit(row);
+          for (col = 0; col < colCount; col++) {
+              if (digitalRead(colPins[col]) == HIGH) {
+                  ks = getKeySymbol(row, col);
+                  fprintf(stderr, "Key PRESS (%d,%d)\n", row, col);
+                  while (digitalRead(colPins[col]) == HIGH){};
+                  fprintf(stderr, "Key RELEASE \n", );
+                  keyFound = TRUE;                            // Force exit of both for loops.
+              }
+
+              if (keyFound) break;
+          }
+          if (keyFound) {
+              delay(BOUNCE_DELAY);
+              break;
+          }
+      }
+
+      delay(SCAN_DELAY);
     }
 
     return 0;
