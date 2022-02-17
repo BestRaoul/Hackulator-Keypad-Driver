@@ -26,7 +26,7 @@ int getRowCount(void)
 void setValue(int outputValue)
 {
     int bit;
-    for (bit = 0 ; bit < rowPins; ++bit) {
+    for (bit = 0 ; bit < rowCount; ++bit) {
         digitalWrite (rowPins[bit], outputValue & (1 << bit));
     }
 }
