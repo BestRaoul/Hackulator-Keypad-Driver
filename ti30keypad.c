@@ -38,44 +38,47 @@ void setBit(int bit)
 }
 
 //fix adapt to my code case
-gboolean specialKey(KeySym keySym, int eventType)
-{
-    // If Special Key, respond and return true
-    if (eventType == EVENT_RELEASE) {
-        if (keySym == SPECIAL_ALPHA_UPPER_KEY) {
-            changeMode(MODE_ALPHA_UPPER);
-        } else if (keySym == SPECIAL_ALPHA_LOWER_KEY) {
-            changeMode(MODE_ALPHA_LOWER);
-        } else if (keySym == SPECIAL_2ND_KEY) {
-            changeMode(MODE_SECOND);
-        } else if (keySym == SPECIAL_NORMAL_KEY) {
-            changeMode(MODE_NORMAL);
-        } else if (keySym == SPECIAL_LOCK_KEY) {
-            changeAlphaLock();
-        } else if (keySym == SPECIAL_BRIGHT_UP_KEY) {
-            brightnessUp();
-        } else if (keySym == SPECIAL_BRIGHT_DOWN_KEY) {
-            brightnessDown();
-        } else if (keySym == SPECIAL_CONTROL_LOCK) {
-            changeControlLock();
-        }
-    }
-
-    if (keySym == SPECIAL_ALPHA_UPPER_KEY ||
-        keySym == SPECIAL_ALPHA_LOWER_KEY ||
-        keySym == SPECIAL_2ND_KEY ||
-        keySym == SPECIAL_LOCK_KEY ||
-        keySym == SPECIAL_NORMAL_KEY ||
-        keySym == SPECIAL_BRIGHT_UP_KEY ||
-        keySym == SPECIAL_BRIGHT_DOWN_KEY ||
-        keySym == SPECIAL_CONTROL_LOCK) {
-        return TRUE;
-    }
-
-    return FALSE;
-}
+/*
+// gboolean specialKey(KeySym keySym, int eventType)
+// {
+//     // If Special Key, respond and return true
+//     if (eventType == EVENT_RELEASE) {
+//         if (keySym == SPECIAL_ALPHA_UPPER_KEY) {
+//             changeMode(MODE_ALPHA_UPPER);
+//         } else if (keySym == SPECIAL_ALPHA_LOWER_KEY) {
+//             changeMode(MODE_ALPHA_LOWER);
+//         } else if (keySym == SPECIAL_2ND_KEY) {
+//             changeMode(MODE_SECOND);
+//         } else if (keySym == SPECIAL_NORMAL_KEY) {
+//             changeMode(MODE_NORMAL);
+//         } else if (keySym == SPECIAL_LOCK_KEY) {
+//             changeAlphaLock();
+//         } else if (keySym == SPECIAL_BRIGHT_UP_KEY) {
+//             brightnessUp();
+//         } else if (keySym == SPECIAL_BRIGHT_DOWN_KEY) {
+//             brightnessDown();
+//         } else if (keySym == SPECIAL_CONTROL_LOCK) {
+//             changeControlLock();
+//         }
+//     }
+//
+//     if (keySym == SPECIAL_ALPHA_UPPER_KEY ||
+//         keySym == SPECIAL_ALPHA_LOWER_KEY ||
+//         keySym == SPECIAL_2ND_KEY ||
+//         keySym == SPECIAL_LOCK_KEY ||
+//         keySym == SPECIAL_NORMAL_KEY ||
+//         keySym == SPECIAL_BRIGHT_UP_KEY ||
+//         keySym == SPECIAL_BRIGHT_DOWN_KEY ||
+//         keySym == SPECIAL_CONTROL_LOCK) {
+//         return TRUE;
+//     }
+//
+//     return FALSE;
+// }
+*/
 
 //??? not used
+/*
 void brightnessUp(void)
 {
     if (brightness < MAX_BRIGHTNESS) {
@@ -95,9 +98,11 @@ void brightnessDown(void)
     g_print("Brightness Down [%i/%i]", brightness, MAX_BRIGHTNESS);
     changeMode(MODE_NORMAL);
 }
+*/
 
 // This function handles lock status for the non-special keys
 //fix adapt to my case
+/*
 void handleLockStatus(KeySym keySym)
 {
     if (mode == MODE_SECOND) {
@@ -106,8 +111,10 @@ void handleLockStatus(KeySym keySym)
         changeMode(MODE_NORMAL);
     }
 }
+*/
 
 //fix to my case
+/*
 void changeAlphaLock(void)
 {
     if (mode != MODE_SECOND) {
@@ -135,82 +142,85 @@ void changeControlLock(void)
         isControlLockActive = TRUE;
     }
 }
+*/
+
 //idk remove idk
-gchar * getImagePath(char * imageFile)
-{
-    // Can't get it working with autostart, so just using Absolute path for now
-    //char currentFolder[256];
-    //char pathSave[256];
-    const char* imageFolder = "/images/";
-    GString * imagePath = g_string_new("/home/pi/ti30keypad");
-/*
-    gchar * result = g_strstr_len (executable->str, 1, "/");
-    if (result == NULL) {
-        if (getcwd(currentFolder, sizeof(currentFolder)) == NULL) {
-            g_print ("Error getting Current Working Directory\n");
-        }
-    } else {
-        getcwd(pathSave, sizeof(pathSave));
-        chdir(executable->str);
-        getcwd(currentFolder, sizeof(currentFolder));
-        chdir(pathSave);
-    }*/
-
-    //g_string_append(imagePath, (char*) currentFolder);
-    g_string_append(imagePath, imageFolder);
-    g_string_append(imagePath, imageFile);
-
-    return imagePath->str;
-}
-//idk
-gchar * getModeIconImage(void)
-{
-    if (mode == MODE_SECOND) {
-        return "2nd.png";
-    } else if (mode == MODE_ALPHA_LOWER) {
-        return "lowercase.png";
-    } else if (mode == MODE_ALPHA_UPPER) {
-        return "uppercase.png";
-    } else if (mode == MODE_TI30) {
-        return "ti30mode.png";
-    }
-
-    return "numbers.png";
-}
-//idk
-void updateStatusIcon(void)
-{
-    gtk_status_icon_set_from_file (tray, getImagePath(getModeIconImage()));
-}
-//fix adapt to my case
-void changeMode(int newMode)
-{
-    lastMode = mode;
-    mode = newMode;
-    if (newMode == MODE_NORMAL || newMode == MODE_TI30) {
-        isAlphaLockActive = FALSE;
-        isControlLockActive = FALSE;
-    }
-    if (newMode == MODE_SECOND) {
-        isControlLockActive = FALSE;
-    }
-    updateStatusIcon();
-}
-//remove I guess
-void cycleModes(void)
-{
-    if (mode == MODE_TI30) {
-        changeMode(MODE_NORMAL);
-    } else {
-        changeMode(MODE_TI30);
-    }
-}
+// gchar * getImagePath(char * imageFile)
+// {
+//     // Can't get it working with autostart, so just using Absolute path for now
+//     //char currentFolder[256];
+//     //char pathSave[256];
+//     const char* imageFolder = "/images/";
+//     GString * imagePath = g_string_new("/home/pi/ti30keypad");
+// /*
+//     gchar * result = g_strstr_len (executable->str, 1, "/");
+//     if (result == NULL) {
+//         if (getcwd(currentFolder, sizeof(currentFolder)) == NULL) {
+//             g_print ("Error getting Current Working Directory\n");
+//         }
+//     } else {
+//         getcwd(pathSave, sizeof(pathSave));
+//         chdir(executable->str);
+//         getcwd(currentFolder, sizeof(currentFolder));
+//         chdir(pathSave);
+//     }*/
+//
+//     //g_string_append(imagePath, (char*) currentFolder);
+//     g_string_append(imagePath, imageFolder);
+//     g_string_append(imagePath, imageFile);
+//
+//     return imagePath->str;
+// }
+// //idk
+// gchar * getModeIconImage(void)
+// {
+//     if (mode == MODE_SECOND) {
+//         return "2nd.png";
+//     } else if (mode == MODE_ALPHA_LOWER) {
+//         return "lowercase.png";
+//     } else if (mode == MODE_ALPHA_UPPER) {
+//         return "uppercase.png";
+//     } else if (mode == MODE_TI30) {
+//         return "ti30mode.png";
+//     }
+//
+//     return "numbers.png";
+// }
+// //idk
+// void updateStatusIcon(void)
+// {
+//     gtk_status_icon_set_from_file (tray, getImagePath(getModeIconImage()));
+// }
+// //fix adapt to my case
+// void changeMode(int newMode)
+// {
+//     lastMode = mode;
+//     mode = newMode;
+//     if (newMode == MODE_NORMAL || newMode == MODE_TI30) {
+//         isAlphaLockActive = FALSE;
+//         isControlLockActive = FALSE;
+//     }
+//     if (newMode == MODE_SECOND) {
+//         isControlLockActive = FALSE;
+//     }
+//     updateStatusIcon();
+// }
+// //remove I guess
+// void cycleModes(void)
+// {
+//     if (mode == MODE_TI30) {
+//         changeMode(MODE_NORMAL);
+//     } else {
+//         changeMode(MODE_TI30);
+//     }
+// }
 
 void destroy(GtkWidget *widget, gpointer data)
 {
     gtk_main_quit ();
 }
 //check phys if it even work without sr595
+/*
 void emulateKeyPress(KeySym keySym)
 {
     KeyCode modcode = 0; //init value
@@ -279,6 +289,7 @@ void emulateKeyRelease(KeySym keySym)
     }
 
 }
+*/
 
 void shutdown(void)
 {
@@ -291,11 +302,11 @@ KeySym getKeySymbol(int row, int col)
 {
     if (mode == MODE_LETTER) {
         return letterLayout[row][col];
-    } else if (mode == MODE_SYMBOL) {
+    }/* else if (mode == MODE_SYMBOL) {
         return symbolLayout[row][col];
     } else if (mode == MODE_GAME) {
         return gameLayout[row][col];
-    }
+    }*/
 
     return letterLayout[row][col];
 }
@@ -358,6 +369,7 @@ void setup(void)
 }
 
 //fix adapt to my case
+/*
 gboolean loop(gpointer data)
 {
     int row, col;
@@ -435,6 +447,7 @@ gboolean loop(gpointer data)
 
     return TRUE;
 }
+*/
 
 /*
 static void show_about( GtkWidget *widget, gpointer data )
@@ -451,9 +464,6 @@ static void show_about( GtkWidget *widget, gpointer data )
     gtk_widget_destroy(dialog);
 }
 */
-
-//power pins (PC 0-4 on the pcb ???)
-int rowPins[] = {0,2,3,4,5}; // Columns I, J, K, L, M, N, O
 
 //main
 int main(int argc, char *argv[])

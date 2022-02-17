@@ -55,12 +55,14 @@
 GtkStatusIcon *tray;
 Display *display;
 
+//power pins (PC 0-4 on the pcb ???)
+int rowPins[] = {0,2,3,4,5}; // Rows A, B, C, D, E
 //Read Pins (PA 0-7 on the calculators pcb)
 int colPins[] = {29,28,27,26,25,24,23,22}; // Columns I, J, K, L, M, N, O, P
 
 KeySym letterLayout[5][8] = {
 // Static 10 buttons
-    {XK_MODE_LETTER, XK_MODE_SYMBOL, XK_MODE_GAME, XK_Shift_Lock, XK_Control_Lock, XK_Alt_Lock, XK_Home, XK_PowerON},  // Row A: ...
+    {XK_l, XK_s, XK_g, XK_Shift_L, XK_Control_L, XK_Alt_L, XK_Home, XK_p},  // Row A: ...
     {XK_Tab, XK_Escape, NoSymbol, // Row B (start 2)
 // Dynamic 29 buttons
      XK_BackSpace, XK_space, XK_KP_Enter, XK_q, XK_w}, // Row B: ...
