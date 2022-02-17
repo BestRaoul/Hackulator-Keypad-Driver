@@ -83,6 +83,7 @@ gboolean isControlLock = FALSE;
 gboolean isAltLock = FALSE;
 gboolean isKeyPressed = FALSE;
 int colCount = 0;
+int rowCount = 0;
 int brightness = MAX_BRIGHTNESS;
 GString * executable;
 

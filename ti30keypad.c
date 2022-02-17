@@ -491,8 +491,6 @@ int main(int argc, char *argv[])
 
     while (TRUE){
       int row, col;
-      colCount = getColCount();
-      rowCount = getRowCount();
       gboolean keyFound = FALSE;
       KeySym ks;
 
