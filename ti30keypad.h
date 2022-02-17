@@ -55,8 +55,9 @@
 GtkStatusIcon *tray;
 Display *display;
 
+//column 24 and 25 are messed up
 /*0 1 2 3 4 5 6 7
-0 - - - - - - - -
+0 . . . . - - . .
 1 . . . . - - . .
 2 . . . . - - . .
 3 . . . . - - . .

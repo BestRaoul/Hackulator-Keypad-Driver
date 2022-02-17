@@ -357,14 +357,14 @@ void setup(void)
     colCount = getColCount();
     rowCount = getRowCount();
 
-    for (i = 0; i < colCount; i++) {   // Set column pins for input, with pullup.
+    for (i = 0; i < 8; i++) {   // Set column pins for input, with pullup.
         pinMode(colPins[i], INPUT);
         pullUpDnControl (colPins[i], PUD_DOWN); //???idfk what that does i hope it-s good
     }
 
-    for (i = 0; i < rowCount; i++) {   // Set column pins for input, with pullup.
+    for (i = 0; i < 5; i++) {   // Set column pins for input, with pullup.
         pinMode(rowPins[i], OUTPUT);
-        //pullUpDnControl (rowPins[i], PUD_UP); //???idfk what that does i hope it-s good
+        pullUpDnControl (rowPins[i], PUD_UP); //???idfk what that does i hope it-s good
     }
 }
 
