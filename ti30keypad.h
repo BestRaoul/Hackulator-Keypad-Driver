@@ -55,8 +55,18 @@
 GtkStatusIcon *tray;
 Display *display;
 
+/*0 1 2 3 4 5 6 7
+0 - - - - - - - -
+1 . . . . - - . .
+2 . . . . - - . .
+3 . . . . - - . .
+4 . . . . - - . .
+
+
+*/
+
 //power pins (PC 0-4 on the pcb ???)
-int rowPins[] = {0,2,3,4,5}; // Rows A, B, C, D, E
+int rowPins[] = {5,4,3,2,1}; // Rows A, B, C, D, E
 //Read Pins (PA 0-7 on the calculators pcb)
 int colPins[] = {29,28,27,26,25,24,23,22}; // Columns I, J, K, L, M, N, O, P
 
