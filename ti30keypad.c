@@ -501,7 +501,7 @@ int main(int argc, char *argv[])
                   ks = getKeySymbol(row, col);
                   fprintf(stderr, "Key PRESS (%d,%d)\n", row, col);
                   while (digitalRead(colPins[col]) == HIGH){};
-                  fprintf(stderr, "Key RELEASE \n", );
+                  fprintf(stderr, "Key RELEASE \n");
                   keyFound = TRUE;                            // Force exit of both for loops.
               }
 
