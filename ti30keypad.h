@@ -40,14 +40,14 @@
 
 
 // None of the defined KeySymbols are in the 0x8000 range
-#define SPECIAL_ALPHA_UPPER_KEY       0x8000  //???
-#define SPECIAL_ALPHA_LOWER_KEY       0x8001  //???
-#define SPECIAL_2ND_KEY               0x8002  //???
-#define SPECIAL_LOCK_KEY              0x8003  //???
-#define SPECIAL_NORMAL_KEY            0x8004  //???
-#define SPECIAL_BRIGHT_UP_KEY         0x8005  //???
-#define SPECIAL_BRIGHT_DOWN_KEY       0x8006  //???
-#define SPECIAL_CONTROL_LOCK          0x8007  //???
+//#define SPECIAL_BRIGHT_UP_KEY         0x8005  //???
+//#define SPECIAL_BRIGHT_DOWN_KEY       0x8006  //???
+#define SPECIAL_CONTROL_LOCK          	0x8007  //???
+#define SPECIAL_SHIFT_LOCK          	0x8008  //???
+#define SPECIAL_ALT_LOCK          	0x8009  //???
+#define SPECIAL_POWER          		0x8001  //???
+
+
 
 #define SHIFT_SYMBOL_SIZE 39  //???
 #define MAX_BRIGHTNESS   10
@@ -66,14 +66,14 @@ Display *display;
 
 */
 
-//power pins (PC 0-4 on the pcb ???)
+//Power Pins (PC 0-1, PD 0-2 on the pcb)
 int rowPins[] = {5,4,3,2,1}; // Rows A, B, C, D, E
 //Read Pins (PA 0-7 on the calculators pcb)
 int colPins[] = {29,28,27,26,25,24,23,22}; // Columns I, J, K, L, M, N, O, P
 
 KeySym letterLayout[5][8] = {
 // Static 10 buttons
-    {XK_l, XK_s, XK_g, XK_Shift_L, XK_Control_L, XK_Alt_L, XK_Home, XK_p},  // Row A: ...
+    {XK_F11, SPECIAL_CONTROL_LOCK, SPECIAL_SHIFT_LOCK, SPECIAL_ALT_LOCK, XK_asterisk, XK_asterisk, XK_Home, SPECIAL_POWER},  // Row A: ...
     {XK_Tab, XK_Escape, NoSymbol, // Row B (start 2)
 // Dynamic 29 buttons
      XK_BackSpace, XK_space, XK_KP_Enter, XK_q, XK_w}, // Row B: ...
@@ -84,14 +84,36 @@ KeySym letterLayout[5][8] = {
 
 //++symbol layout
 //`1234567890-=[];'\,./~!@#$%^&*()+{}:"|<>?
+KeySym symbolLayout[5][8] = {
+// Static 10 buttons
+    {XK_F11, SPECIAL_CONTROL_LOCK, SPECIAL_SHIFT_LOCK, SPECIAL_ALT_LOCK, XK_asterisk, XK_asterisk, XK_Home, SPECIAL_POWER},  // Row A: ...
+    {XK_Tab, XK_Escape, NoSymbol, // Row B (start 2)
+// Dynamic 29 buttons
+     XK_BackSpace, XK_space, XK_KP_Enter, XK_ampersand, XK_1}, // Row B: ...
+    {XK_2, XK_3, XK_4, XK_5, XK_6, XK_7, XK_8, XK_9},  // Row C: ...
+    {XK_0, XK_minus, XK_equal, XK_bracketleft, XK_bracketright, XK_semicolon, XK_apostrophe, XK_backslash},  // Row D: ...
+    {XK_less, XK_comma, XK_period, XK_slash, XK_0, XK_0, XK_0, XK_0}   // Row E: ...
+};
+
+//int keyMap[8][5][2]={
+//{{0,1},{},{},{1,0},{4,0}},
+//{{1,1},{},{},{},{}},
+//{{2,1},{},{},{},{}},
+//{{3,1},{},{},{},{}},
+//{{4,1},{},{},{},NULL},
+//{{},{},{},{},{}},
+//{{},{},{},{},{}},
+//{{},{},{},{},{}},
+//}
+
 //++game layout
 //WASD="arrows" Esc, Space, idk, ...
 
 int mode = MODE_LETTER;
-int lastMode = MODE_LETTER;
-gboolean isShiftLock = FALSE;
-gboolean isControlLock = FALSE;
-gboolean isAltLock = FALSE;
+int lastMode = MODE_SYMBOL;
+gboolean ShiftLock = FALSE;
+gboolean ControlLock = FALSE;
+gboolean AltLock = FALSE;
 gboolean isKeyPressed = FALSE;
 int colCount = 0;
 int rowCount = 0;
@@ -107,9 +129,9 @@ gchar * getModeIconImage(void);
 gboolean specialKey(KeySym keySym, int eventType);
 void brightnessUp(void);
 void brightnessDown(void);
-void changeAlphaLock(void);
 void changeControlLock(void);
-void handleLockStatus(KeySym keySym);
+void changeShiftLock(void);
+void changeAltLock(void);
 void updateStatusIcon(void);
 void changeMode(int newMode);
 void cycleModes(void);

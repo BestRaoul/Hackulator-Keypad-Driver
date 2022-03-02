@@ -2,6 +2,10 @@
   Filename: ti30keypad.c
 
 ***************************************************/
+// My ToDo:
+// adapt specialKeys ()
+// fix emulateKeyPress/Release with shift and control Locks
+
 
 // To Do:
 // Add Screen to Black for Shutdown
@@ -22,7 +26,7 @@ int getRowCount(void)
     return sizeof(rowPins) / sizeof(rowPins[0]);
 }
 
-//fix it not use sr595
+//works
 void setValue(int outputValue)
 {
     int bit;
@@ -31,7 +35,7 @@ void setValue(int outputValue)
     }
 }
 
-//fix it not use sr595
+//works
 void setBit(int bit)
 {
     setValue(1 << bit);
@@ -77,6 +81,30 @@ void setBit(int bit)
 // }
 */
 
+gboolean specialKey(KeySym keySym, int eventType)
+{
+    // If Special Key, respond and return true
+    if (eventType == EVENT_RELEASE) {
+        if (keySym == SPECIAL_CONTROL_LOCK) {
+            changeControlLock();
+        } else if (keySym == SPECIAL_SHIFT_LOCK) {
+	    changeShiftLock();
+	} else if (keySym == SPECIAL_ALT_LOCK) {
+	    changeAltLock();
+	} else if (keySym == SPECIAL_POWER) {
+	    shutdown();
+	}
+    }
+
+    if (keySym == SPECIAL_CONTROL_LOCK
+	|| keySym == SPECIAL_SHIFT_LOCK
+	|| keySym == SPECIAL_ALT_LOCK
+	|| keySym == SPECIAL_POWER
+	) {
+        return TRUE;
+    }
+    return FALSE;
+}
 //??? not used
 /*
 void brightnessUp(void)
@@ -101,48 +129,34 @@ void brightnessDown(void)
 */
 
 // This function handles lock status for the non-special keys
-//fix adapt to my case
-/*
-void handleLockStatus(KeySym keySym)
-{
-    if (mode == MODE_SECOND) {
-        changeMode(lastMode);
-    } else if ((mode == MODE_ALPHA_LOWER || mode == MODE_ALPHA_UPPER) && isAlphaLockActive == FALSE) {
-        changeMode(MODE_NORMAL);
-    }
-}
-*/
-
-//fix to my case
-/*
-void changeAlphaLock(void)
-{
-    if (mode != MODE_SECOND) {
-        return;
-    }
-
-    if (isAlphaLockActive) {
-        isAlphaLockActive = FALSE;
-    } else {
-        isAlphaLockActive = TRUE;
-    }
-
-    if (lastMode == MODE_ALPHA_UPPER) {
-        changeMode(MODE_ALPHA_UPPER);
-    } else if (lastMode == MODE_ALPHA_LOWER || lastMode == MODE_NORMAL) {
-        changeMode(MODE_ALPHA_LOWER);
-    }
-}
 
 void changeControlLock(void)
 {
-    if (isControlLockActive) {
-        isControlLockActive = FALSE;
+    if (ControlLock) {
+        ControlLock = FALSE;
     } else {
-        isControlLockActive = TRUE;
+        ControlLock = TRUE;
     }
 }
-*/
+
+void changeShiftLock(void)
+{
+    if (ShiftLock) {
+        ShiftLock = FALSE;
+    } else {
+        ShiftLock = TRUE;
+    }
+}
+
+void changeAltLock(void)
+{
+    if (AltLock) {
+        AltLock = FALSE;
+    } else {
+        AltLock = TRUE;
+    }
+}
+
 
 //idk remove idk
 // gchar * getImagePath(char * imageFile)
@@ -191,36 +205,41 @@ void changeControlLock(void)
 // {
 //     gtk_status_icon_set_from_file (tray, getImagePath(getModeIconImage()));
 // }
-// //fix adapt to my case
-// void changeMode(int newMode)
-// {
-//     lastMode = mode;
-//     mode = newMode;
-//     if (newMode == MODE_NORMAL || newMode == MODE_TI30) {
-//         isAlphaLockActive = FALSE;
-//         isControlLockActive = FALSE;
-//     }
-//     if (newMode == MODE_SECOND) {
-//         isControlLockActive = FALSE;
-//     }
-//     updateStatusIcon();
-// }
-// //remove I guess
-// void cycleModes(void)
-// {
-//     if (mode == MODE_TI30) {
-//         changeMode(MODE_NORMAL);
-//     } else {
-//         changeMode(MODE_TI30);
-//     }
-// }
+
+//works i guess
+void changeMode(int newMode)
+{
+    lastMode = mode;
+    mode = newMode;
+//    if (newMode == MODE_NORMAL || newMode == MODE_TI30) {
+//        isAlphaLockActive = FALSE;
+//        isControlLockActive = FALSE;
+//    }
+//    if (newMode == MODE_SECOND) {
+//        isControlLockActive = FALSE;
+//    }
+//    updateStatusIcon();
+}
+//works
+void cycleModes(void)
+{
+     if (mode == MODE_LETTER) {
+         changeMode(MODE_SYMBOL);
+     } else if (mode == MODE_SYMBOL) {
+         changeMode(MODE_GAME);
+     } else {
+     	 changeMode(MODE_LETTER);
+     }
+}
 
 void destroy(GtkWidget *widget, gpointer data)
 {
     gtk_main_quit ();
 }
-//check phys if it even work without sr595
-/*
+//fix shift and control shenenigans
+//seems like buttons that require shift will automatically respond with the non-shift key
+//seems like you can combo key + shift + control by simulatingKey(shift,contrl);
+
 void emulateKeyPress(KeySym keySym)
 {
     KeyCode modcode = 0; //init value
@@ -228,9 +247,9 @@ void emulateKeyPress(KeySym keySym)
 
     if (specialKey(keySym, EVENT_PRESS)) {
         return;
-    } else {
+    }/* else {
         handleLockStatus(keySym);
-    }
+    }*/
 
     if (keySym == NoSymbol) {
         return;
@@ -238,15 +257,21 @@ void emulateKeyPress(KeySym keySym)
 
     modcode = XKeysymToKeycode(display, keySym);
 
-    if (isShiftRequired(keySym)) {
+    if (ShiftLock) {
         //g_print("Event: Shift Pressed\n");
         XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Shift_L), True, 0);
         XFlush(display);
     }
 
-    if (isControlLockActive) {
+    if (ControlLock) {
         //g_print("Event: Control Pressed\n");
         XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Control_L), True, 0);
+        XFlush(display);
+    }
+
+    if (AltLock) {
+        //g_print("Event: Alt Pressed\n");
+        XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Alt_L), True, 0);
         XFlush(display);
     }
 
@@ -275,18 +300,59 @@ void emulateKeyRelease(KeySym keySym)
     XTestFakeKeyEvent(display, modcode, False, 0);
     XFlush(display);
 
-    if (isControlLockActive) {
+    if (ControlLock) {
         //g_print("Event: Control Pressed\n");
-        XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Control_L), True, 0);
+        XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Control_L), False, 0);
         XFlush(display);
-        isControlLockActive = FALSE;
+//        ControlLock = FALSE;
     }
 
-    if (isShiftRequired(keySym)) {
+    if (ShiftLock) {
         //g_print("Event: Shift Released\n");
         XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Shift_L), False, 0);
         XFlush(display);
     }
+
+    if (AltLock) {
+        //g_print("Event: Shift Released\n");
+        XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Alt_L), False, 0);
+        XFlush(display);
+    }
+
+}
+
+
+//Simpler version but no shift alt ctrl lock and special keys
+/*
+void emulateKeyPress(KeySym keySym)
+{
+    KeyCode modcode = 0; //init value
+    isKeyPressed = TRUE;
+
+    if (keySym == NoSymbol) {
+        return;
+    }
+
+    modcode = XKeysymToKeycode(display, keySym);
+
+    XTestFakeKeyEvent(display, modcode, True, 0);
+    XFlush(display);
+}
+// check phys
+void emulateKeyRelease(KeySym keySym)
+{
+    KeyCode modcode = 0; //init value
+    isKeyPressed = FALSE;
+
+    if (keySym == NoSymbol) {
+        return;
+    }
+
+    modcode = XKeysymToKeycode(display, keySym);
+
+    //g_print("Event: Key Released\n");
+    XTestFakeKeyEvent(display, modcode, False, 0);
+    XFlush(display);
 
 }
 */
@@ -295,16 +361,18 @@ void shutdown(void)
 {
     // Would like something to change brightness to 0
     // Maybe it has something to do with system not blacking out screen anymore...
-    system ("sudo shutdown -h now");
+    system ("clear");
+    system ("echo Shuting down now...");
+    //system ("sudo shutdown -h now");
 }
-//fix adapt to my case
+//works but gameLayout not yet
 KeySym getKeySymbol(int row, int col)
 {
     if (mode == MODE_LETTER) {
         return letterLayout[row][col];
-    }/* else if (mode == MODE_SYMBOL) {
+    } else if (mode == MODE_SYMBOL) {
         return symbolLayout[row][col];
-    } else if (mode == MODE_GAME) {
+    }/* else if (mode == MODE_GAME) {
         return gameLayout[row][col];
     }*/
 
@@ -315,7 +383,9 @@ KeySym getKeySymbol(int row, int col)
 // + OpenXDisplay
 // + HIGH on backlight = soft pwm on the backlight pin
 // + mode inp on all colPins[i]
-//check if it even works and no errors
+//
+//works
+//figure out what about backlight+data+clock+latch pins
 void setup(void)
 {
     int i;
@@ -325,10 +395,10 @@ void setup(void)
         exit(1);
     }
 
-    // if ((display = XOpenDisplay(NULL)) == NULL) {
-    //     g_print("XOpenDisplay Initialization Failure\n");
-    //     exit(2);
-    // }
+    if ((display = XOpenDisplay(NULL)) == NULL) {
+        g_print("XOpenDisplay Initialization Failure\n");
+        exit(2);
+    }
 
 /*
 //sr595Setup (100, 8, DATA_PIN, CLOCK_PIN, LATCH_PIN) ;
@@ -368,7 +438,7 @@ void setup(void)
     }
 }
 
-//fix adapt to my case
+//got the gist of it
 /*
 gboolean loop(gpointer data)
 {
@@ -380,13 +450,17 @@ gboolean loop(gpointer data)
         return FALSE;
     }
 
+
+    // loops through all the pins
+    // if any is HIGH -> emulates Key Down -> until LOW
+    // if F11 -> Cycle Mode
     for (row = 0; row < 8; row++) {
         setBit(row);
         for (col = 0; col < colCount; col++) {
             if (digitalRead(colPins[col]) == HIGH) {
                 ks = getKeySymbol(row, col);
                 emulateKeyPress(ks);
-                while (keyFound == FALSE && digitalRead(colPins[col]) == HIGH) {
+                while (keyFound == FALSE && digitalRead(colPins[col]) == HIGH) { //exits if pin gets low or if ks=F11 -> change mode
                     if (ks == XK_F11 && digitalRead(ONKEY_PIN) == LOW) {
                         g_print("Mode Change Key Combo Detected\n");
                         cycleModes();
@@ -404,6 +478,12 @@ gboolean loop(gpointer data)
             break;
         }
     }
+
+    // if not PowerButton and not a single pin is HIGH
+    // switch(layout):
+    // ti30: while loop until ON or F11 	{pin 0,0 pressed wtf??? does not make sense
+    // 2nd : shutdown + while loop forever 	(so as not play entire loop again)
+    // dflt: while loop until ON or F11		{pin 0,0
 
     if (digitalRead(ONKEY_PIN) == LOW) {
         if (!keyFound) {
@@ -449,7 +529,7 @@ gboolean loop(gpointer data)
 }
 */
 
-/*
+/*//commented out in master too useless then I guess idk
 static void show_about( GtkWidget *widget, gpointer data )
 {
     GtkWidget *dialog;
@@ -466,6 +546,7 @@ static void show_about( GtkWidget *widget, gpointer data )
 */
 
 //main
+//figure out what all the g_stuff does
 int main(int argc, char *argv[])
 {
     // executable = g_string_new("");
@@ -488,6 +569,9 @@ int main(int argc, char *argv[])
     //
     // g_source_remove (func_ref);
     setup();
+    fprintf(stderr, "Setup done, input loop started! \n");
+
+    //for later, let-s assume pin 24 and 25 work properly
 
     while (TRUE){
       int row, col;
@@ -498,19 +582,28 @@ int main(int argc, char *argv[])
           setBit(row);
           for (col = 0; col < colCount; col++) {
               if (digitalRead(colPins[col]) == HIGH) {
+
                   ks = getKeySymbol(row, col);
-                  fprintf(stderr, "Key PRESS (%d,%d)\n", row, col);
-                  while (digitalRead(colPins[col]) == HIGH){};
-                  fprintf(stderr, "Key RELEASE \n");
-                  keyFound = TRUE;                            // Force exit of both for loops.
+
+		  fprintf(stderr, "[%d,%d] ", row, col);
+//                  emulateKeyPress(ks);
+
+		  while (digitalRead(colPins[col]) == HIGH && keyFound==FALSE){
+		  	if (ks == XK_F11) {
+//			     cycleModes(); keyFound = TRUE;
+//             		     fprintf(stderr, "\n Mode Cycle Detected \n"); 
+			}
+		  };
+
+//                  fprintf(stderr, "Key RELEASE \n");
+//                  emulateKeyRelease(ks);
+
+		  keyFound = TRUE;                            // Force exit of both for loops.
               }
 
               if (keyFound) break;
           }
-          if (keyFound) {
-              delay(BOUNCE_DELAY);
-              break;
-          }
+          if (keyFound) {delay(BOUNCE_DELAY); break; }
       }
 
       delay(SCAN_DELAY);
@@ -519,3 +612,29 @@ int main(int argc, char *argv[])
     return 0;
 }
 // ####### FORGOTTEN ABYSS
+/*
+    int row = 3; int col = 0;
+    KeySym ks = getKeySymbol(row, col);
+
+    fprintf(stderr, "Key PRESS (%d,%d)\n", row, col);
+    emulateKeyPress(ks);
+    delay(10);
+    emulateKeyRelease(ks);
+
+    emulateKeyPress(XK_Shift_L);
+    emulateKeyPress(XK_s);
+    emulateKeyRelease(XK_s);
+    emulateKeyPress(XK_s);
+    emulateKeyRelease(XK_s);
+    emulateKeyPress(XK_s);
+    emulateKeyRelease(XK_s);
+    delay(2000);
+    emulateKeyRelease(XK_s);
+    emulateKeyRelease(XK_Shift_L);
+
+    g_print("\n");
+    delay(10);
+
+    return 0;
+
+*/
